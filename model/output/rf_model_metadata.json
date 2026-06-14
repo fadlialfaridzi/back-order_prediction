@@ -1,12 +1,12 @@
 {
-  "trained_at": "2026-06-13T05:11:00.928226",
+  "trained_at": "2026-06-13T15:58:15.551558",
   "model_class": "RandomForestClassifier",
   "parameters": {
     "n_estimators": 100,
     "max_depth": null,
     "class_weight": "balanced"
   },
-  "smote_applied": false,
+  "smote_applied": true,
   "feature_names": [
     "national_inv",
     "lead_time",
@@ -31,10 +31,12 @@
     "rev_stop"
   ],
   "evaluation_metrics": {
-    "accuracy": 0.9872,
-    "precision": 0.1951,
-    "recall": 0.0499,
-    "f1_score": 0.0794,
-    "roc_auc": 0.8556
-  }
+    "accuracy": 0.9879,
+    "precision": 0.3132,
+    "recall": 0.0733,
+    "f1_score": 0.1188,
+    "roc_auc": 0.8551
+  },
+  "optimal_threshold": 0.15,
+  "threshold_tuned_at": "2026-06-14T17:08:56.153223"
 }

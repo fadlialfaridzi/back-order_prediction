@@ -1,0 +1,18 @@
+2026-06-13 16:13:47 | INFO     | =======================================================
+2026-06-13 16:13:47 | INFO     | THRESHOLD TUNING — BACKORDER PREDICTION
+2026-06-13 16:13:47 | INFO     | =======================================================
+2026-06-13 16:13:48 | INFO     | Model dimuat dari: D:\mrp\model\output\rf_model.pkl
+2026-06-13 16:13:48 | INFO     | Nama fitur dimuat dari metadata (21 fitur).
+2026-06-13 16:13:48 | INFO     | Memuat data testing...
+2026-06-13 16:13:49 | INFO     | Data dimuat: 242076 baris, 23 kolom
+2026-06-13 16:13:49 | INFO     |   'perf_6_month_avg': 19101 sentinel → NaN
+2026-06-13 16:13:49 | INFO     |   'perf_12_month_avg': 17975 sentinel → NaN
+2026-06-13 16:13:49 | WARNING  |   Kolom 'potential_issue': 1 nilai tak dikenal (bukan Yes/No) diisi 0.
+2026-06-13 16:13:49 | WARNING  |   Kolom 'deck_risk': 1 nilai tak dikenal (bukan Yes/No) diisi 0.
+2026-06-13 16:13:49 | WARNING  |   Kolom 'oe_constraint': 1 nilai tak dikenal (bukan Yes/No) diisi 0.
+2026-06-13 16:13:49 | WARNING  |   Kolom 'ppap_risk': 1 nilai tak dikenal (bukan Yes/No) diisi 0.
+2026-06-13 16:13:49 | WARNING  |   Kolom 'stop_auto_buy': 1 nilai tak dikenal (bukan Yes/No) diisi 0.
+2026-06-13 16:13:49 | WARNING  |   Kolom 'rev_stop': 1 nilai tak dikenal (bukan Yes/No) diisi 0.
+2026-06-13 16:13:49 | INFO     | Fitur siap: 21 | Target — Aman(0): 239387, Backorder(1): 2688
+2026-06-13 16:13:49 | INFO     | Menghitung probabilitas prediksi...
+2026-06-13 16:13:49 | INFO     | Menganalisis 14 nilai threshold...

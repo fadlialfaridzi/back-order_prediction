@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-06-14T17:08:56.150504",
+  "source_model": "output\\rf_model.pkl",
+  "chosen_threshold": 0.15,
+  "recommendations": {
+    "max_f1": {
+      "threshold": 0.15,
+      "precision": 0.1711,
+      "recall": 0.3683,
+      "f1": 0.2337,
+      "tp": 990,
+      "fp": 4795,
+      "fn": 1698
+    },
+    "max_recall": {
+      "threshold": 0.05,
+      "precision": 0.1141,
+      "recall": 0.6016,
+      "f1": 0.1918,
+      "tp": 1617,
+      "fp": 12560,
+      "fn": 1071
+    },
+    "balanced": {
+      "threshold": 0.35,
+      "precision": 0.1647,
+      "recall": 0.1652,
+      "f1": 0.165,
+      "tp": 444,
+      "fp": 2251,
+      "fn": 2244
+    }
+  }
+}

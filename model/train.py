@@ -167,23 +167,35 @@ def extract_features(df: pd.DataFrame):
     X = df.drop(columns=DROP_COLUMNS + [TARGET_COLUMN], errors="ignore")
     y = df[TARGET_COLUMN].map(BINARY_MAP)
 
-    if y.isna().any():
-        bad = df[TARGET_COLUMN][y.isna()].unique()
-        raise ValueError(f"Nilai tak dikenal di target: {bad}. Izin: {list(BINARY_MAP)}")
+    # Drop baris dengan nilai target tak dikenal (bukan Yes/No), bukan raise error
+    n_bad = int(y.isna().sum())
+    if n_bad:
+        bad_vals = df[TARGET_COLUMN][y.isna()].unique()
+        logger.warning(
+            "  %d baris dengan nilai target tak dikenal %s → dihapus.", n_bad, bad_vals
+        )
+        mask = y.notna()
+        X    = X[mask].reset_index(drop=True)
+        y    = y[mask].reset_index(drop=True)
 
     # Identifikasi kolom Yes/No sebelum konversi
     binary_cols = [
         col for col in X.columns
-        if X[col].dropna().isin(["Yes", "No"]).all() and X[col].dtype not in ["int64", "float64"]
+        if X[col].dtype not in ["int64", "float64", "int32", "float32"]
+        and not X[col].dropna().empty
+        and X[col].dropna().isin(["Yes", "No"]).all()
     ]
     if binary_cols:
         for col in binary_cols:
-            X[col] = _map_binary_column(X[col])
+            mapped = X[col].map({"Yes": 1, "No": 0})
+            n_unknown = int(mapped.isna().sum())
+            if n_unknown:
+                logger.warning(
+                    "  Kolom '%s': %d nilai tak dikenal (bukan Yes/No) diisi 0.", col, n_unknown
+                )
+                mapped = mapped.fillna(0)
+            X[col] = mapped.astype("int64")
         logger.info("  Kolom Yes/No dikonversi (1/0): %s", binary_cols)
-
-    # Konversi Int64 (nullable integer) → int64 biasa agar kompatibel dengan sklearn & SMOTE
-    for col in X.select_dtypes(include="Int64").columns:
-        X[col] = X[col].astype("int64")
 
     # Drop kolom yang masih non-numerik (jika ada kolom tak terduga)
     non_num = X.select_dtypes(exclude="number").columns.tolist()

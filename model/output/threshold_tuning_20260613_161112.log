@@ -1,0 +1,9 @@
+2026-06-13 16:11:12 | INFO     | =======================================================
+2026-06-13 16:11:12 | INFO     | THRESHOLD TUNING — BACKORDER PREDICTION
+2026-06-13 16:11:12 | INFO     | =======================================================
+2026-06-13 16:11:13 | INFO     | Model dimuat dari: D:\mrp\model\output\rf_model.pkl
+2026-06-13 16:11:13 | INFO     | Nama fitur dimuat dari metadata (21 fitur).
+2026-06-13 16:11:13 | INFO     | Memuat data testing...
+2026-06-13 16:11:13 | INFO     | Data dimuat: 242076 baris, 23 kolom
+2026-06-13 16:11:13 | INFO     |   'perf_6_month_avg': 19101 sentinel → NaN
+2026-06-13 16:11:13 | INFO     |   'perf_12_month_avg': 17975 sentinel → NaN

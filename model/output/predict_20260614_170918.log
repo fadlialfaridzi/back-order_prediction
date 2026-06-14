@@ -1,0 +1,44 @@
+2026-06-14 17:09:18 | INFO     | =======================================================
+2026-06-14 17:09:18 | INFO     | BACKORDER PREDICTION — INFERENCE
+2026-06-14 17:09:18 | INFO     | =======================================================
+2026-06-14 17:09:20 | INFO     | Model dimuat dari: D:\mrp\model\output\rf_model.pkl
+2026-06-14 17:09:20 | INFO     | Metadata dimuat: 21 fitur, threshold=0.15
+2026-06-14 17:09:20 | INFO     | Threshold yang digunakan: 0.15 (dari metadata)
+2026-06-14 17:09:20 | INFO     | Data input dimuat: 242076 baris, 23 kolom
+2026-06-14 17:09:20 | INFO     | Mempersiapkan data untuk prediksi...
+2026-06-14 17:09:20 | INFO     |   'perf_6_month_avg': 19101 sentinel → NaN
+2026-06-14 17:09:20 | INFO     |   'perf_12_month_avg': 17975 sentinel → NaN
+2026-06-14 17:09:21 | WARNING  |   Kolom 'potential_issue': 1 nilai tak dikenal diisi 0.
+2026-06-14 17:09:21 | WARNING  |   Kolom 'deck_risk': 1 nilai tak dikenal diisi 0.
+2026-06-14 17:09:21 | WARNING  |   Kolom 'oe_constraint': 1 nilai tak dikenal diisi 0.
+2026-06-14 17:09:21 | WARNING  |   Kolom 'ppap_risk': 1 nilai tak dikenal diisi 0.
+2026-06-14 17:09:21 | WARNING  |   Kolom 'stop_auto_buy': 1 nilai tak dikenal diisi 0.
+2026-06-14 17:09:21 | WARNING  |   Kolom 'rev_stop': 1 nilai tak dikenal diisi 0.
+2026-06-14 17:09:21 | INFO     |   Kolom Yes/No dikonversi (1/0): ['potential_issue', 'deck_risk', 'oe_constraint', 'ppap_risk', 'stop_auto_buy', 'rev_stop']
+2026-06-14 17:09:21 | INFO     |   Fitur siap: 21 kolom, 242076 baris.
+2026-06-14 17:09:21 | INFO     | Menjalankan prediksi pada 242076 baris...
+2026-06-14 17:09:21 | INFO     | -------------------------------------------------------
+2026-06-14 17:09:21 | INFO     | RINGKASAN HASIL PREDIKSI
+2026-06-14 17:09:21 | INFO     | -------------------------------------------------------
+2026-06-14 17:09:21 | INFO     |   Total baris        : 242076
+2026-06-14 17:09:21 | INFO     |   Diprediksi Backorder : 6081 (2.51%)
+2026-06-14 17:09:21 | INFO     |   Diprediksi Aman      : 235995 (97.49%)
+2026-06-14 17:09:21 | INFO     |   Probabilitas backorder — min: 0.150 | median: 0.310 | max: 1.000
+2026-06-14 17:09:21 | INFO     | -------------------------------------------------------
+2026-06-14 17:09:23 | INFO     | Hasil disimpan ke: D:\mrp\model\output\predictions.csv
+2026-06-14 17:09:23 | INFO     | -------------------------------------------------------
+2026-06-14 17:09:23 | INFO     | TOP 10 ITEM DENGAN RISIKO BACKORDER TERTINGGI
+2026-06-14 17:09:23 | INFO     | -------------------------------------------------------
+2026-06-14 17:09:23 | INFO     |   sku: 3359010 | national_inv: 2.0 | probabilitas_backorder: 1.0 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3374601 | national_inv: 0.0 | probabilitas_backorder: 1.0 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3422723 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3444442 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3503110 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3305674 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3520148 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3369922 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3438767 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     |   sku: 3341620 | national_inv: 0.0 | probabilitas_backorder: 0.9895 | status: Backorder
+2026-06-14 17:09:23 | INFO     | -------------------------------------------------------
+2026-06-14 17:09:23 | INFO     | Total waktu: 5.2 detik
+2026-06-14 17:09:23 | INFO     | Pipeline selesai.
