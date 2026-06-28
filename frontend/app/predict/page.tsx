@@ -1,299 +1,263 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import {
-  Package,
-  TrendingUp,
-  ShoppingCart,
-  BarChart3,
-  AlertTriangle,
-  Loader2,
-  RotateCcw,
+  FlaskConical,
   Send,
+  Loader2,
+  AlertTriangle,
+  CheckCircle,
+  RotateCcw,
   Info,
 } from 'lucide-react';
+import {
+  predictSingle,
+  FEATURE_GROUPS,
+  type PredictionInput,
+  type PredictionResult,
+} from '../lib/api';
 import RiskGauge from '../components/RiskGauge';
-import { predictSingle, FEATURE_GROUPS, type PredictionInput, type PredictionResult } from '../lib/api';
 
-// Map icon string to component
-const ICON_MAP: Record<string, React.ElementType> = {
-  Package, TrendingUp, ShoppingCart, BarChart3, AlertTriangle,
-};
-
-// Build default values from feature groups
-function getDefaults(): PredictionInput {
+// Default values dari FEATURE_GROUPS
+function buildDefaults(): PredictionInput {
   const defaults: Record<string, number> = {};
   for (const group of FEATURE_GROUPS) {
-    for (const field of group.fields) {
-      defaults[field.key] = field.default;
+    for (const f of group.fields) {
+      defaults[f.key] = f.default;
     }
   }
   return defaults as unknown as PredictionInput;
 }
 
 export default function PredictPage() {
-  const [formData, setFormData] = useState<PredictionInput>(getDefaults);
-  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [form, setForm]       = useState<PredictionInput>(buildDefaults());
+  const [result, setResult]   = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError]     = useState<string | null>(null);
 
-  const handleChange = useCallback((key: string, value: number) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
-  }, []);
+  const updateField = (key: string, value: number) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  };
 
-  const handleToggle = useCallback((key: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [key]: prev[key as keyof PredictionInput] === 1 ? 0 : 1,
-    }));
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setFormData(getDefaults());
-    setResult(null);
-    setError(null);
-  }, []);
-
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     setLoading(true);
     setError(null);
+    setResult(null);
     try {
-      const res = await predictSingle(formData);
+      const res = await predictSingle(form);
       setResult(res);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Terjadi kesalahan');
+      setError(e instanceof Error ? e.message : 'Gagal menjalankan prediksi.');
     } finally {
       setLoading(false);
     }
-  }, [formData]);
+  };
 
-  // Count active risk flags
-  const activeRisks = useMemo(() => {
-    const riskKeys = ['potential_issue', 'deck_risk', 'oe_constraint', 'ppap_risk', 'stop_auto_buy', 'rev_stop'];
-    return riskKeys.filter(k => formData[k as keyof PredictionInput] === 1).length;
-  }, [formData]);
+  const handleReset = () => {
+    setForm(buildDefaults());
+    setResult(null);
+    setError(null);
+  };
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-in-up">
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white">
           Prediksi Backorder
         </h1>
-        <p className="text-[var(--color-text-secondary)] mt-2 text-sm lg:text-base">
-          Masukkan parameter inventaris dan supply chain untuk memprediksi risiko backorder produk.
+        <p className="text-[var(--color-text-secondary)] mt-2 text-sm">
+          Masukkan 21 parameter fitur untuk memprediksi risiko backorder suatu item.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Left: Form — 2 columns */}
-        <div className="xl:col-span-2 space-y-6">
-          {FEATURE_GROUPS.map((group, gi) => {
-            const IconComp = ICON_MAP[group.icon] || Package;
-            return (
-              <div
-                key={group.title}
-                className="glass-card p-6 animate-fade-in-up"
-                style={{ animationDelay: `${gi * 0.08}s` }}
-              >
-                {/* Section header */}
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center">
-                    <IconComp size={18} className="text-[var(--color-primary-light)]" />
-                  </div>
-                  <h2 className="text-base font-semibold text-white">{group.title}</h2>
-                  {group.title === 'Risk Flags' && activeRisks > 0 && (
-                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium">
-                      {activeRisks} aktif
-                    </span>
-                  )}
+      {/* Result card — tampil di atas jika ada hasil */}
+      {result && (
+        <div
+          className={`glass-card p-6 mb-6 animate-fade-in-up border ${
+            result.is_backorder
+              ? 'border-red-500/30 bg-red-500/5'
+              : 'border-emerald-500/30 bg-emerald-500/5'
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            {/* RiskGauge visual */}
+            <div className="flex-shrink-0 mx-auto sm:mx-0">
+              <RiskGauge
+                probability={result.probability}
+                threshold={result.threshold_used}
+                status={result.status}
+                size={200}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold text-white">
+                {result.is_backorder ? '⚠ Risiko Backorder Terdeteksi' : '✓ Item Diprediksi Aman'}
+              </h3>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+                {result.is_backorder
+                  ? 'Model mendeteksi potensi backorder. Pertimbangkan untuk menambah stok atau mempercepat pengadaan.'
+                  : 'Model tidak mendeteksi risiko backorder saat ini. Tetap lakukan monitoring rutin.'}
+              </p>
+              <div className="flex flex-wrap gap-4 mt-4">
+                <div className="px-4 py-2 rounded-lg bg-[var(--color-bg-elevated)]">
+                  <p className="text-xs text-[var(--color-text-muted)]">Probabilitas</p>
+                  <p className={`text-xl font-bold font-mono ${
+                    result.is_backorder ? 'text-red-400' : 'text-emerald-400'
+                  }`}>
+                    {(result.probability * 100).toFixed(2)}%
+                  </p>
                 </div>
-
-                {/* Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
-                  {group.fields.map((field) => {
-                    const val = formData[field.key as keyof PredictionInput];
-                    const isToggle = 'type' in field && field.type === 'toggle';
-
-                    if (isToggle) {
-                      return (
-                        <div key={field.key} className="flex items-center justify-between sm:col-span-1">
-                          <div className="flex-1 min-w-0">
-                            <label className="text-sm font-medium text-[var(--color-text-primary)] block">
-                              {field.label}
-                            </label>
-                            <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">
-                              {field.desc}
-                            </p>
-                          </div>
-                          <label className="toggle-switch ml-3 shrink-0">
-                            <input
-                              type="checkbox"
-                              checked={val === 1}
-                              onChange={() => handleToggle(field.key)}
-                            />
-                            <span className="toggle-slider" />
-                          </label>
-                        </div>
-                      );
-                    }
-
-                    // Numeric field — slider + input
-                    const numField = field as { key: string; label: string; min: number; max: number; step: number; default: number; desc: string };
-                    return (
-                      <div key={field.key}>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <label className="text-sm font-medium text-[var(--color-text-primary)]">
-                            {field.label}
-                          </label>
-                          <div className="group relative">
-                            <Info size={13} className="text-[var(--color-text-muted)] cursor-help" />
-                            <div className="absolute right-0 bottom-full mb-2 w-48 p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-lg">
-                              {field.desc}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="range"
-                            min={numField.min}
-                            max={numField.max}
-                            step={numField.step}
-                            value={val}
-                            onChange={e => handleChange(field.key, parseFloat(e.target.value))}
-                            className="flex-1"
-                          />
-                          <input
-                            type="number"
-                            min={numField.min}
-                            max={numField.max}
-                            step={numField.step}
-                            value={val}
-                            onChange={e => handleChange(field.key, parseFloat(e.target.value) || 0)}
-                            className="input-field w-24 text-right text-sm"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div className="px-4 py-2 rounded-lg bg-[var(--color-bg-elevated)]">
+                  <p className="text-xs text-[var(--color-text-muted)]">Status</p>
+                  <p className={`text-xl font-bold ${
+                    result.is_backorder ? 'text-red-400' : 'text-emerald-400'
+                  }`}>
+                    {result.status}
+                  </p>
+                </div>
+                <div className="px-4 py-2 rounded-lg bg-[var(--color-bg-elevated)]">
+                  <p className="text-xs text-[var(--color-text-muted)]">Threshold</p>
+                  <p className="text-xl font-bold text-[var(--color-primary-light)] font-mono">
+                    {(result.threshold_used * 100).toFixed(0)}%
+                  </p>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Right: Result panel — sticky */}
-        <div className="xl:col-span-1">
-          <div className="sticky top-6 space-y-4">
-            {/* Actions */}
-            <div className="glass-card p-6 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-              <div className="flex gap-3">
-                <button
-                  className="btn-primary flex-1 flex items-center justify-center gap-2"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 size={18} className="animate-spin" />
-                      Memproses...
-                    </>
-                  ) : (
-                    <>
-                      <Send size={18} />
-                      Prediksi
-                    </>
-                  )}
-                </button>
-                <button
-                  className="px-4 py-3 rounded-xl border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] hover:text-white transition-all"
-                  onClick={handleReset}
-                  title="Reset semua nilai"
-                >
-                  <RotateCcw size={18} />
-                </button>
+              {/* Probability bar */}
+              <div className="mt-4">
+                <div className="flex justify-between text-xs text-[var(--color-text-muted)] mb-1">
+                  <span>0%</span>
+                  <span>Threshold {(result.threshold_used * 100).toFixed(0)}%</span>
+                  <span>100%</span>
+                </div>
+                <div className="relative w-full h-3 rounded-full bg-[var(--color-border)] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${Math.min(result.probability * 100, 100)}%`,
+                      background: result.is_backorder
+                        ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
+                        : 'linear-gradient(90deg, #10b981, #06b6d4)',
+                    }}
+                  />
+                  {/* Threshold marker */}
+                  <div
+                    className="absolute top-0 h-full w-0.5 bg-white/50"
+                    style={{ left: `${result.threshold_used * 100}%` }}
+                  />
+                </div>
               </div>
             </div>
-
-            {/* Error */}
-            {error && (
-              <div className="glass-card p-4 border-red-500/30 animate-fade-in-up">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle size={18} className="text-red-400 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-red-400">Prediksi Gagal</p>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-1">{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Result gauge */}
-            {result && (
-              <div className={`glass-card p-6 animate-fade-in-up ${
-                result.prediction === 1 ? 'glow-danger' : 'glow-success'
-              }`}>
-                <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-4 text-center">
-                  Hasil Prediksi
-                </h3>
-                <RiskGauge
-                  probability={result.probability}
-                  threshold={result.threshold_used}
-                  status={result.status}
-                />
-
-                {/* Detail metrics */}
-                <div className="mt-6 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--color-text-muted)]">Probabilitas</span>
-                    <span className="font-mono font-medium">{(result.probability * 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--color-text-muted)]">Threshold</span>
-                    <span className="font-mono font-medium">{(result.threshold_used * 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--color-text-muted)]">Keputusan</span>
-                    <span className={`font-semibold ${
-                      result.prediction === 1 ? 'text-red-400' : 'text-emerald-400'
-                    }`}>
-                      {result.status}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Interpretation */}
-                <div className="mt-5 p-3 rounded-lg bg-[var(--color-bg-elevated)] text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  {result.prediction === 1 ? (
-                    <>
-                      <strong className="text-red-400">⚠ Risiko Tinggi:</strong> Model memprediksi produk ini
-                      berpotensi mengalami backorder. Pertimbangkan untuk menambah stok, mempercepat
-                      procurement, atau mencari supplier alternatif.
-                    </>
-                  ) : (
-                    <>
-                      <strong className="text-emerald-400">✓ Aman:</strong> Model memprediksi produk ini
-                      tidak berisiko mengalami backorder. Stok dan supply chain dalam kondisi normal.
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* No result placeholder */}
-            {!result && !error && (
-              <div className="glass-card p-8 animate-fade-in-up flex flex-col items-center text-center" style={{ animationDelay: '0.4s' }}>
-                <div className="w-16 h-16 rounded-2xl bg-[var(--color-bg-elevated)] flex items-center justify-center mb-4">
-                  <BarChart3 size={28} className="text-[var(--color-text-muted)]" />
-                </div>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  Isi parameter di sebelah kiri, lalu klik <strong className="text-white">Prediksi</strong> untuk
-                  melihat hasilnya di sini.
-                </p>
-              </div>
-            )}
           </div>
         </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="glass-card p-4 mb-6 border border-red-500/20 bg-red-500/5 animate-fade-in-up">
+          <p className="text-sm text-red-400">{error}</p>
+        </div>
+      )}
+
+      {/* Form groups */}
+      <div className="space-y-6">
+        {FEATURE_GROUPS.map((group, gi) => (
+          <div
+            key={group.title}
+            className="glass-card p-6 animate-fade-in-up"
+            style={{ animationDelay: `${gi * 0.05}s` }}
+          >
+            <h2 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
+              <FlaskConical size={18} className="text-[var(--color-primary-light)]" />
+              {group.title}
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {group.fields.map(field => {
+                const value = form[field.key as keyof PredictionInput];
+
+                // Toggle field (0/1)
+                if ('type' in field && field.type === 'toggle') {
+                  return (
+                    <div key={field.key} className="p-3 rounded-xl bg-[var(--color-bg-elevated)]">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0 mr-3">
+                          <label className="text-sm font-medium text-white block">{field.label}</label>
+                          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{field.desc}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => updateField(field.key, value === 1 ? 0 : 1)}
+                          className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                            value === 1
+                              ? 'bg-[var(--color-primary)]'
+                              : 'bg-[var(--color-border)]'
+                          }`}
+                        >
+                          <div
+                            className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                              value === 1 ? 'translate-x-[22px]' : 'translate-x-0.5'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Numeric field
+                const numField = field as { key: string; label: string; desc: string; min: number; max: number; step: number; default: number };
+                return (
+                  <div key={field.key} className="p-3 rounded-xl bg-[var(--color-bg-elevated)]">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-sm font-medium text-white">{numField.label}</label>
+                      <div className="group relative">
+                        <Info size={13} className="text-[var(--color-text-muted)] cursor-help" />
+                        <div className="absolute right-0 bottom-full mb-2 w-48 p-2 rounded-lg bg-[#1a1a2e] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-lg">
+                          {numField.desc}
+                        </div>
+                      </div>
+                    </div>
+                    <input
+                      type="number"
+                      className="input-field text-sm font-mono"
+                      value={value}
+                      min={numField.min}
+                      max={numField.max}
+                      step={numField.step}
+                      onChange={e => updateField(field.key, Number(e.target.value))}
+                    />
+                    {/* Range info */}
+                    <p className="text-[10px] text-[var(--color-text-muted)] mt-1 font-mono">
+                      Range: {numField.min} — {numField.max.toLocaleString()}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-3 mt-6 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-light)] transition-all text-sm font-medium disabled:opacity-60"
+        >
+          {loading
+            ? <><Loader2 size={16} className="animate-spin" /> Memproses...</>
+            : <><Send size={16} /> Jalankan Prediksi</>}
+        </button>
+        <button
+          onClick={handleReset}
+          disabled={loading}
+          className="flex items-center gap-2 px-5 py-3 rounded-xl border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] hover:text-white transition-all text-sm"
+        >
+          <RotateCcw size={15} />
+          Reset
+        </button>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 Flask Sidecar — ML Inference Service
 =====================================
 Memuat rf_model.pkl sekali saat startup dan melayani prediksi
-backorder melalui REST API.
+backorder melalui REST API (Flask, port 5001).
 
 Penggunaan:
     python app.py

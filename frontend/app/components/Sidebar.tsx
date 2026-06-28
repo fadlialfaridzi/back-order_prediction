@@ -8,6 +8,7 @@ import {
   Package, 
   FileBarChart,
   Activity,
+  Upload,
   Menu,
   X
 } from 'lucide-react';
@@ -17,6 +18,7 @@ import clsx from 'clsx';
 const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/predict', label: 'Prediksi', icon: FlaskConical },
+  { href: '/batch', label: 'Batch CSV', icon: Upload },
   { href: '/inventory', label: 'Inventaris', icon: Package },
   { href: '/analysis', label: 'Analisis', icon: FileBarChart },
 ];

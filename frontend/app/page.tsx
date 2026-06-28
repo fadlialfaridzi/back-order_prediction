@@ -176,13 +176,13 @@ export default function DashboardPage() {
             </Link>
 
             <Link
-              href="/predict"
+              href="/batch"
               className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 hover:border-emerald-500/40 transition-all group"
             >
               <div>
                 <p className="text-sm font-semibold text-white">Batch Prediction</p>
                 <p className="text-xs text-[var(--color-text-muted)] mt-1">
-                  Upload CSV untuk prediksi massal (segera hadir)
+                  Upload CSV untuk prediksi massal hingga 10.000 item
                 </p>
               </div>
               <ArrowRight size={18} className="text-[var(--color-text-muted)] group-hover:text-white group-hover:translate-x-1 transition-all" />
@@ -221,13 +221,13 @@ export default function DashboardPage() {
                 <div key={m.label} className="text-center p-4 rounded-xl bg-[var(--color-bg-elevated)]">
                   <p className="text-xs text-[var(--color-text-muted)] mb-2">{m.label}</p>
                   <p className="text-xl font-bold" style={{ color: m.color }}>
-                    {(m.value * 100).toFixed(1)}%
+                    {((m.value ?? 0) * 100).toFixed(1)}%
                   </p>
                   <div className="mt-2 w-full h-1.5 rounded-full bg-[var(--color-border)]">
                     <div
                       className="h-full rounded-full transition-all duration-1000"
                       style={{
-                        width: `${m.value * 100}%`,
+                        width: `${(m.value ?? 0) * 100}%`,
                         background: m.color,
                       }}
                     />
