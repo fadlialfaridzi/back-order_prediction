@@ -42,7 +42,7 @@ export interface PredictionInput {
   // Performa supplier (sentinel -99 = belum ada data)
   perf_6_month_avg: number;
   perf_12_month_avg: number;
-  // Risk flags (0 | 1, dikirim sebagai number agar slider & toggle konsisten)
+  // Risk flags (0 | 1)
   potential_issue: number;
   deck_risk: number;
   oe_constraint: number;
@@ -52,22 +52,33 @@ export interface PredictionInput {
 }
 
 export interface PredictionResult {
-  probability: number;     // 0–1
-  prediction: number;      // 0 | 1
-  status: string;          // "Aman" | "Backorder"
-  is_backorder: boolean;
-  threshold_used: number;  // 0–1
+  // Flask baru mengembalikan probability_backorder, bukan probability
+  probability_backorder: number; // 0–1 (dari Flask)
+  probability: number;           // 0–1 (di-alias dari probability_backorder di transform)
+  prediction: number;            // 0 | 1
+  status: string;                // "Aman" | "Backorder"
+  is_backorder: boolean;         // di-derive di frontend
+  threshold_used: number;        // 0–1
+  model_version?: string;
   sku?: string;
 }
 
-export interface BatchResultItem extends PredictionResult {
+export interface BatchResultItem {
   index: number;
+  probability_backorder: number; // 0–1 (dari Flask baru)
+  probability: number;           // alias agar komponen lama tetap bekerja
+  prediction: number;
+  status: string;
+  is_backorder: boolean;
+  sku?: string | null;
 }
 
 export interface BatchSummary {
   total: number;
   backorder: number;
   aman: number;
+  // Flask baru: backorder_percentage. Flask lama: backorder_pct.
+  // Kita normalkan ke backorder_pct di transform.
   backorder_pct: number;
 }
 
@@ -87,25 +98,65 @@ export interface LogPrediksiItem {
   tanggal_prediksi: string;
 }
 
+/**
+ * ModelInfo — memetakan respons /model/info dari Flask baru (schema_version 2)
+ * sekaligus tetap kompatibel dengan respons lama.
+ */
+export interface ModelMetrics {
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1_score: number;   // dinormalisasi dari "f1" (Flask baru) atau "f1_score" (lama)
+  roc_auc: number | null;
+  average_precision?: number;
+}
+
 export interface ModelInfo {
+  // --- Identitas ---
   trained_at: string;
-  model_class: string;
-  smote_applied: boolean;
+  model_type?: string;   // Flask baru: "sklearn.pipeline.Pipeline(RandomForestClassifier)"
+  model_class?: string;  // Flask lama: "RandomForestClassifier"
+
+  // --- Threshold ---
   optimal_threshold: number;
-  threshold_tuned_at?: string;
-  parameters: {
-    n_estimators: number;
-    max_depth: number | null;
-    class_weight: string;
+  threshold_status?: string;     // "tuned" | "not_tuned" | "unknown"
+  threshold_tuned_at?: string;   // lama — mungkin tidak ada di schema baru
+
+  // --- Parameter model ---
+  parameters?: {
+    n_estimators?: number;
+    max_depth?: number | null;
+    class_weight?: string | null;
+    [key: string]: unknown;
   };
+  model_parameters?: {           // Flask baru memakai model_parameters
+    n_estimators?: number;
+    max_depth?: number | null;
+    class_weight?: string | null;
+    [key: string]: unknown;
+  };
+
+  // --- Fitur ---
   feature_names: string[];
-  evaluation_metrics: {
-    accuracy: number;
-    precision: number;
-    recall: number;
-    f1_score: number;
-    roc_auc: number | null;
+  numeric_features?: string[];
+  binary_features?: string[];
+
+  // --- Metrik evaluasi ---
+  // Flask lama: evaluation_metrics.{accuracy, precision, recall, f1_score, roc_auc}
+  // Flask baru: validation_metrics_before_threshold_tuning.{accuracy, precision, recall, f1, roc_auc}
+  evaluation_metrics?: ModelMetrics;
+  validation_metrics_before_threshold_tuning?: {
+    accuracy?: number;
+    precision?: number;
+    recall?: number;
+    f1?: number;           // Flask baru pakai "f1" bukan "f1_score"
+    roc_auc?: number;
+    average_precision?: number;
   };
+
+  // --- Lain-lain (Flask lama) ---
+  smote_applied?: boolean;
+  library_versions?: Record<string, string>;
 }
 
 export interface BarangItem {
@@ -204,6 +255,100 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Normalisasi respons API
+// ---------------------------------------------------------------------------
+
+/**
+ * Normalisasi respons /model/info agar mendukung schema lama DAN baru.
+ *
+ * Flask lama:  { model_class, evaluation_metrics.{f1_score}, parameters }
+ * Flask baru:  { model_type, validation_metrics_before_threshold_tuning.{f1}, model_parameters }
+ */
+function normalizeModelInfo(raw: ModelInfo): ModelInfo {
+  const info = { ...raw };
+
+  // Normalisasi nama model
+  if (!info.model_class && info.model_type) {
+    // Ambil nama kelas dari string panjang seperti
+    // "sklearn.pipeline.Pipeline(RandomForestClassifier)"
+    const match = info.model_type.match(/\(([^)]+)\)$/);
+    info.model_class = match ? match[1] : info.model_type;
+  }
+
+  // Normalisasi parameter
+  if (!info.parameters && info.model_parameters) {
+    info.parameters = info.model_parameters as ModelInfo['parameters'];
+  }
+
+  // Normalisasi metrik evaluasi
+  if (!info.evaluation_metrics) {
+    const vm = info.validation_metrics_before_threshold_tuning;
+    if (vm) {
+      info.evaluation_metrics = {
+        accuracy:  vm.accuracy  ?? 0,
+        precision: vm.precision ?? 0,
+        recall:    vm.recall    ?? 0,
+        // Flask baru: "f1", Flask lama: "f1_score"
+        f1_score:  vm.f1        ?? 0,
+        roc_auc:   vm.roc_auc  ?? null,
+        average_precision: vm.average_precision,
+      };
+    }
+  } else {
+    // Pastikan f1_score ada (Flask lama sudah punya ini)
+    if (info.evaluation_metrics && !('f1_score' in info.evaluation_metrics)) {
+      (info.evaluation_metrics as Record<string, unknown>).f1_score =
+        (info.evaluation_metrics as Record<string, unknown>).f1 ?? 0;
+    }
+  }
+
+  return info;
+}
+
+/**
+ * Normalisasi respons /predict (single) agar probability selalu ada.
+ * Flask baru: probability_backorder. Flask lama: probability.
+ */
+function normalizePredictResult(raw: PredictionResult): PredictionResult {
+  const prob = raw.probability_backorder ?? raw.probability ?? 0;
+  return {
+    ...raw,
+    probability_backorder: prob,
+    probability: prob,
+    is_backorder: raw.prediction === 1,
+  };
+}
+
+/**
+ * Normalisasi respons /predict/batch.
+ * Flask baru: item.probability_backorder, summary.backorder_percentage
+ * Flask lama: item.probability, summary.backorder_pct
+ */
+function normalizeBatchResponse(raw: BatchPredictResponse): BatchPredictResponse {
+  const results = raw.results.map(r => {
+    const prob = r.probability_backorder ?? r.probability ?? 0;
+    return {
+      ...r,
+      probability_backorder: prob,
+      probability: prob,
+      is_backorder: r.prediction === 1,
+    };
+  });
+
+  const rawSummary = raw.summary as BatchSummary & { backorder_percentage?: number };
+  const backorder_pct =
+    rawSummary.backorder_pct ??
+    rawSummary.backorder_percentage ??
+    (rawSummary.total > 0 ? (rawSummary.backorder / rawSummary.total) * 100 : 0);
+
+  return {
+    ...raw,
+    results,
+    summary: { ...raw.summary, backorder_pct },
+  };
+}
+
+// ---------------------------------------------------------------------------
 // API helpers
 // ---------------------------------------------------------------------------
 
@@ -214,7 +359,9 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`);
+    throw new Error((body as { error?: string; message?: string }).error
+      ?? (body as { error?: string; message?: string }).message
+      ?? `HTTP ${res.status}`);
   }
   return res.json() as Promise<T>;
 }
@@ -223,16 +370,13 @@ export const predictSingle = (data: PredictionInput): Promise<PredictionResult> 
   apiFetch<PredictionResult>('/api/predict', {
     method: 'POST',
     body: JSON.stringify(data),
-  }).then(res => ({
-    ...res,
-    is_backorder: res.prediction === 1,
-  }));
+  }).then(normalizePredictResult);
 
 export const predictBatch = (data: Record<string, unknown>[]): Promise<BatchPredictResponse> =>
   apiFetch<BatchPredictResponse>('/api/predict/batch', {
     method: 'POST',
     body: JSON.stringify({ data }),
-  });
+  }).then(normalizeBatchResponse);
 
 export const runAllPredictions = (): Promise<{ summary: BatchSummary; written: number; threshold_used: number }> =>
   apiFetch('/api/predict/run-all', { method: 'POST' });
@@ -244,7 +388,7 @@ export const getPredictLog = (): Promise<LogPrediksiItem[]> =>
   apiFetch<LogPrediksiItem[]>('/api/predict/log');
 
 export const getModelInfo = (): Promise<ModelInfo> =>
-  apiFetch<ModelInfo>('/api/model/info');
+  apiFetch<ModelInfo>('/api/model/info').then(normalizeModelInfo);
 
 export const getHealth = (): Promise<Record<string, string>> =>
   apiFetch<Record<string, string>>('/api/health');

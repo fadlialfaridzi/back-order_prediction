@@ -1,0 +1,17 @@
+2026-06-29 09:06:11 | INFO     | Memuat model: D:\mrp\model\output\rf_model.pkl
+2026-06-29 09:06:13 | INFO     | Memuat validation set: D:\mrp\model\output\validation_data.csv.gz
+2026-06-29 09:06:16 | INFO     | ========================================================================
+2026-06-29 09:06:16 | INFO     | EVALUASI VALIDATION
+2026-06-29 09:06:16 | INFO     | ========================================================================
+2026-06-29 09:06:16 | INFO     | Threshold         : 0.22057899
+2026-06-29 09:06:16 | INFO     | Average Precision : 0.409073
+2026-06-29 09:06:16 | INFO     | ROC-AUC           : 0.981198
+2026-06-29 09:06:16 | INFO     | Precision         : 0.189030
+2026-06-29 09:06:16 | INFO     | Recall            : 0.793623
+2026-06-29 09:06:16 | INFO     | F1                : 0.305333
+2026-06-29 09:06:16 | INFO     | Accuracy          : 0.975845
+2026-06-29 09:06:16 | INFO     | Confusion matrix  : TN=163813 FP=3844 FN=233 TP=896
+2026-06-29 09:06:17 | INFO     | Threshold terpilih: 0.22057899
+2026-06-29 09:06:17 | INFO     | Analisis threshold : D:\mrp\model\output\threshold_analysis.csv
+2026-06-29 09:06:17 | INFO     | Hasil tuning       : D:\mrp\model\output\threshold_result.json
+2026-06-29 09:06:17 | INFO     | Metadata diperbarui: D:\mrp\model\output\rf_model_metadata.json

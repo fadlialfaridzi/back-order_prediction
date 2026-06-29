@@ -1,0 +1,86 @@
+2026-06-28 23:56:46 | INFO     | =======================================================
+2026-06-28 23:56:46 | INFO     | THRESHOLD TUNING — BACKORDER PREDICTION
+2026-06-28 23:56:46 | INFO     | =======================================================
+2026-06-28 23:56:47 | INFO     | Model dimuat dari: D:\mrp\model\output\rf_model.pkl
+2026-06-28 23:56:47 | INFO     | Nama fitur dimuat dari metadata (21 fitur).
+2026-06-28 23:56:47 | INFO     | Memuat data testing...
+2026-06-28 23:56:47 | INFO     | Data dimuat: 242076 baris, 23 kolom
+2026-06-28 23:56:47 | INFO     |   'perf_6_month_avg': 19101 sentinel → NaN
+2026-06-28 23:56:47 | INFO     |   'perf_12_month_avg': 17975 sentinel → NaN
+2026-06-28 23:56:48 | WARNING  |   1 baris dengan nilai target tak dikenal di 'went_on_backorder' → dihapus.
+2026-06-28 23:56:48 | INFO     | Fitur siap: 21 | Target — Aman(0): 239387, Backorder(1): 2688
+2026-06-28 23:56:48 | INFO     | Menghitung probabilitas prediksi...
+2026-06-28 23:56:49 | INFO     | Menganalisis 14 nilai threshold...
+2026-06-28 23:56:49 | INFO     | ================================================================================
+2026-06-28 23:56:49 | INFO     | TABEL THRESHOLD — PRECISION / RECALL / F1
+2026-06-28 23:56:49 | INFO     | ================================================================================
+2026-06-28 23:56:49 | INFO     |   Threshold  Precision    Recall       F1         TP       FP       FN      
+2026-06-28 23:56:49 | INFO     | --------------------------------------------------------------------------------
+2026-06-28 23:56:49 | INFO     |   0.05       0.1141       0.6016       0.1918     1617     12560    1071    
+2026-06-28 23:56:49 | INFO     |   0.10       0.1473       0.4632       0.2235     1245     7207     1443    
+2026-06-28 23:56:49 | INFO     |   0.15       0.1711       0.3683       0.2337     990      4795     1698    
+2026-06-28 23:56:49 | INFO     |   0.20       0.1805       0.3162       0.2298     850      3860     1838    
+2026-06-28 23:56:49 | INFO     |   0.25       0.1805       0.2582       0.2125     694      3151     1994    
+2026-06-28 23:56:49 | INFO     |   0.30       0.1817       0.2169       0.1977     583      2626     2105    
+2026-06-28 23:56:49 | INFO     |   0.35       0.1647       0.1652       0.1650     444      2251     2244    
+2026-06-28 23:56:49 | INFO     |   0.40       0.1669       0.1414       0.1531     380      1897     2308    
+2026-06-28 23:56:49 | INFO     |   0.45       0.3269       0.1079       0.1622     290      597      2398    
+2026-06-28 23:56:49 | INFO     |   0.50       0.3210       0.0807       0.1290     217      459      2471     <-- default
+2026-06-28 23:56:49 | INFO     |   0.55       0.3132       0.0599       0.1006     161      353      2527    
+2026-06-28 23:56:49 | INFO     |   0.60       0.2854       0.0428       0.0744     115      288      2573    
+2026-06-28 23:56:49 | INFO     |   0.65       0.2267       0.0272       0.0485     73       249      2615    
+2026-06-28 23:56:49 | INFO     |   0.70       0.2227       0.0182       0.0337     49       171      2639    
+2026-06-28 23:56:49 | INFO     | ================================================================================
+2026-06-28 23:56:49 | INFO     | ================================================================================
+2026-06-28 23:56:49 | INFO     | REKOMENDASI THRESHOLD
+2026-06-28 23:56:49 | INFO     | ================================================================================
+2026-06-28 23:56:49 | INFO     |   Maks F1-score        (seimbang precision & recall)
+2026-06-28 23:56:49 | INFO     |     Threshold: 0.15 | Precision: 0.1711 | Recall: 0.3683 | F1: 0.2337 | TP: 990 | FP: 4795 | FN: 1698
+2026-06-28 23:56:49 | INFO     | 
+2026-06-28 23:56:49 | INFO     |   Maks recall          (prioritas: jangan lewatkan backorder)
+2026-06-28 23:56:49 | INFO     |     Threshold: 0.05 | Precision: 0.1141 | Recall: 0.6016 | F1: 0.1918 | TP: 1617 | FP: 12560 | FN: 1071
+2026-06-28 23:56:49 | INFO     | 
+2026-06-28 23:56:49 | INFO     |   Balanced             (precision ≈ recall)
+2026-06-28 23:56:49 | INFO     |     Threshold: 0.35 | Precision: 0.1647 | Recall: 0.1652 | F1: 0.1650 | TP: 444 | FP: 2251 | FN: 2244
+2026-06-28 23:56:49 | INFO     | 
+2026-06-28 23:56:49 | INFO     | --------------------------------------------------------------------------------
+2026-06-28 23:56:49 | INFO     | PANDUAN MEMILIH THRESHOLD UNTUK BACKORDER:
+2026-06-28 23:56:49 | INFO     |   Recall tinggi  = tidak melewatkan backorder nyata,
+2026-06-28 23:56:49 | INFO     |                    tapi lebih banyak false alarm (tim ops perlu verifikasi lebih).
+2026-06-28 23:56:49 | INFO     |   Precision tinggi = sedikit false alarm,
+2026-06-28 23:56:49 | INFO     |                    tapi lebih banyak backorder nyata yang terlewat.
+2026-06-28 23:56:49 | INFO     |   Rekomendasi umum: gunakan threshold 'Maks recall' jika
+2026-06-28 23:56:49 | INFO     |   biaya kehabisan stok > biaya verifikasi manual false alarm.
+2026-06-28 23:56:49 | INFO     | ================================================================================
+2026-06-28 23:56:49 | INFO     | Threshold 0.10 dipilih manual.
+2026-06-28 23:56:49 | INFO     | =======================================================
+2026-06-28 23:56:49 | INFO     | EVALUASI DETAIL — threshold = 0.10
+2026-06-28 23:56:49 | INFO     | =======================================================
+2026-06-28 23:56:49 | INFO     |   ACCURACY  : 0.9643
+2026-06-28 23:56:49 | INFO     |   PRECISION : 0.1473
+2026-06-28 23:56:49 | INFO     |   RECALL    : 0.4632
+2026-06-28 23:56:49 | INFO     |   F1-SCORE  : 0.2235
+2026-06-28 23:56:50 | INFO     |   ROC-AUC   : 0.8551
+2026-06-28 23:56:50 | INFO     | -------------------------------------------------------
+2026-06-28 23:56:50 | INFO     |   CONFUSION MATRIX
+2026-06-28 23:56:50 | INFO     |   TN: 232180    FP: 7207
+2026-06-28 23:56:50 | INFO     |   FN: 1443      TP: 1245
+2026-06-28 23:56:50 | INFO     | -------------------------------------------------------
+2026-06-28 23:56:50 | INFO     |   precision    recall  f1-score   support
+2026-06-28 23:56:50 | INFO     |   
+2026-06-28 23:56:50 | INFO     |        Aman (0)       0.99      0.97      0.98    239387
+2026-06-28 23:56:50 | INFO     |   Backorder (1)       0.15      0.46      0.22      2688
+2026-06-28 23:56:50 | INFO     |   
+2026-06-28 23:56:50 | INFO     |        accuracy                           0.96    242075
+2026-06-28 23:56:50 | INFO     |       macro avg       0.57      0.72      0.60    242075
+2026-06-28 23:56:50 | INFO     |    weighted avg       0.98      0.96      0.97    242075
+2026-06-28 23:56:50 | INFO     | =======================================================
+2026-06-28 23:56:50 | INFO     | Tabel threshold disimpan : D:\mrp\model\output\threshold_analysis.csv
+2026-06-28 23:56:50 | INFO     | Hasil JSON disimpan     : D:\mrp\model\output\threshold_result.json
+2026-06-28 23:56:50 | INFO     | rf_model_metadata.json diperbarui dengan threshold baru.
+2026-06-28 23:56:50 | INFO     | Total waktu: 3.3 detik
+2026-06-28 23:56:50 | INFO     | Pipeline selesai.
+2026-06-28 23:56:50 | INFO     | 
+2026-06-28 23:56:50 | INFO     | Cara pakai threshold baru di predict.py:
+2026-06-28 23:56:50 | INFO     |   from threshold_tuning import predict_with_threshold
+2026-06-28 23:56:50 | INFO     |   predictions = predict_with_threshold(model, X_new, threshold=0.10)

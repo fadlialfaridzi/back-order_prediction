@@ -1,0 +1,59 @@
+STRUKTUR DIREKTORI
+
+model/
+├── env/
+├── output/
+├── app.py
+├── predict.py                 # versi lama perlu disesuaikan bila masih dipakai
+├── requirements.txt
+├── Testing_BOP.csv
+├── threshold_tuning.py
+├── train.py
+└── Training_BOP.csv
+
+URUTAN MENJALANKAN
+
+1. Aktifkan virtual environment Windows:
+   env\Scripts\activate
+
+2. Instal dependency:
+   pip install -r requirements_recommended.txt
+
+3. Training + hyperparameter tuning:
+   python train.py
+
+   Mode lebih cepat tanpa search:
+   python train.py --no-tune
+
+4. Pilih threshold pada validation set:
+   python threshold_tuning.py --strategy fbeta --beta 2
+
+   Contoh target recall minimal 70%:
+   python threshold_tuning.py --strategy target_recall --target-recall 0.70
+
+   Contoh cost-sensitive; satu false negative dianggap 20 kali false positive:
+   python threshold_tuning.py --strategy min_cost --cost-fn 20 --cost-fp 1
+
+5. Evaluasi final pada Testing_BOP.csv hanya setelah threshold dipilih:
+   python threshold_tuning.py --strategy fbeta --beta 2 --test Testing_BOP.csv
+
+6. Jalankan API:
+   python app.py
+
+   Production:
+   gunicorn -w 1 --threads 4 -b 0.0.0.0:5001 app:app
+
+OUTPUT UTAMA
+
+output/rf_model.pkl
+output/rf_model_metadata.json
+output/validation_data.csv.gz
+output/hyperparameter_search_results.csv
+output/threshold_analysis.csv
+output/threshold_result.json
+
+CATATAN
+
+rf_model.pkl sekarang berisi sklearn Pipeline lengkap, bukan hanya RandomForestClassifier.
+Karena itu predict.py lama yang melakukan preprocessing manual perlu diperbarui agar tidak
+mengubah Yes/No menjadi 1/0 sebelum masuk ke pipeline.

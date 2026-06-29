@@ -12,8 +12,9 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import clsx from 'clsx';
+import { getModelInfo } from '../lib/api';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -26,6 +27,18 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [threshold, setThreshold] = useState<number | null>(null);
+
+  // Muat threshold dinamis dari /model/info agar selalu sinkron
+  useEffect(() => {
+    getModelInfo()
+      .then(info => setThreshold(info.optimal_threshold))
+      .catch(() => {}); // diam jika gagal
+  }, []);
+
+  const thresholdLabel = threshold != null
+    ? `t=${(threshold * 100).toFixed(0)}%`
+    : 't=—';
 
   return (
     <>
@@ -100,7 +113,7 @@ export default function Sidebar() {
               <span className="text-[var(--color-text-muted)]">Model Active</span>
             </div>
             <p className="text-xs text-[var(--color-text-muted)] mt-1">
-              RF Classifier · t=0.15
+              RF Classifier · {thresholdLabel}
             </p>
           </div>
         </div>

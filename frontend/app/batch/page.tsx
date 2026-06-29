@@ -137,10 +137,10 @@ export default function BatchPage() {
       {result && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 animate-fade-in-up">
           {[
-            { label: 'Total Item', value: result.summary.total, color: '#6366f1' },
-            { label: 'Backorder', value: result.summary.backorder, color: '#ef4444' },
-            { label: 'Aman', value: result.summary.aman, color: '#10b981' },
-            { label: 'Backorder %', value: `${result.summary.backorder_pct}%`, color: '#f59e0b' },
+            { label: 'Total Item',   value: result.summary.total,          color: '#6366f1' },
+          { label: 'Backorder',     value: result.summary.backorder,      color: '#ef4444' },
+          { label: 'Aman',          value: result.summary.aman,           color: '#10b981' },
+          { label: 'Backorder %',   value: `${result.summary.backorder_pct.toFixed(1)}%`, color: '#f59e0b' },
           ].map(card => (
             <div key={card.label} className="glass-card p-4 text-center">
               <p className="text-xs text-[var(--color-text-muted)] uppercase tracking-wider">{card.label}</p>

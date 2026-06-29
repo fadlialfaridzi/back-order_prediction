@@ -1,34 +1,61 @@
 {
-  "generated_at": "2026-06-14T17:08:56.150504",
-  "source_model": "output\\rf_model.pkl",
-  "chosen_threshold": 0.15,
-  "recommendations": {
-    "max_f1": {
-      "threshold": 0.15,
-      "precision": 0.1711,
-      "recall": 0.3683,
-      "f1": 0.2337,
-      "tp": 990,
-      "fp": 4795,
-      "fn": 1698
-    },
-    "max_recall": {
-      "threshold": 0.05,
-      "precision": 0.1141,
-      "recall": 0.6016,
-      "f1": 0.1918,
-      "tp": 1617,
-      "fp": 12560,
-      "fn": 1071
-    },
-    "balanced": {
-      "threshold": 0.35,
-      "precision": 0.1647,
-      "recall": 0.1652,
-      "f1": 0.165,
-      "tp": 444,
-      "fp": 2251,
-      "fn": 2244
+  "tuned_at": "2026-06-29T02:06:35.262489+00:00",
+  "model_file": "D:\\mrp\\model\\output\\rf_model.pkl",
+  "validation_file": "D:\\mrp\\model\\output\\validation_data.csv.gz",
+  "strategy": "fbeta",
+  "beta": 2.0,
+  "target_recall": null,
+  "min_precision": null,
+  "cost_fn": 10.0,
+  "cost_fp": 1.0,
+  "chosen_threshold": 0.3783053376568284,
+  "validation_metrics": {
+    "threshold": 0.3783053376568284,
+    "rows": 168786,
+    "positive_rate": 0.006688943395779271,
+    "average_precision": 0.4090725786669308,
+    "roc_auc": 0.9811984935733307,
+    "accuracy": 0.9880914293839537,
+    "precision": 0.3078935891844745,
+    "recall": 0.62533215234721,
+    "f1": 0.4126241963763881,
+    "confusion_matrix": {
+      "tn": 166070,
+      "fp": 1587,
+      "fn": 423,
+      "tp": 706
+    }
+  },
+  "selected_threshold_row": {
+    "threshold": 0.3783053376568284,
+    "precision": 0.3078935891844745,
+    "recall": 0.62533215234721,
+    "f1": 0.41262419637638814,
+    "fbeta": 0.5184314877368189,
+    "tp": 706.0,
+    "fp": 1587.0,
+    "fn": 423.0,
+    "tn": 166070.0,
+    "total_cost": 5817.0,
+    "predicted_positive": 2293.0
+  },
+  "threshold_analysis_file": "D:\\mrp\\model\\output\\threshold_analysis.csv",
+  "test_file": "D:\\mrp\\model\\Testing_BOP.csv",
+  "test_metrics": {
+    "threshold": 0.3783053376568284,
+    "rows": 242075,
+    "positive_rate": 0.01110399669523908,
+    "average_precision": 0.23592837567966643,
+    "roc_auc": 0.930739810326803,
+    "accuracy": 0.9839884333367758,
+    "precision": 0.2953135768435562,
+    "recall": 0.31882440476190477,
+    "f1": 0.3066189624329159,
+    "confusion_matrix": {
+      "tn": 237342,
+      "fp": 2045,
+      "fn": 1831,
+      "tp": 857
     }
   }
 }

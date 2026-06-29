@@ -34,7 +34,7 @@ function StatsCard({ title, value, subtitle, icon: Icon, color, delay }: StatsCa
           <p className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
             {title}
           </p>
-          <p className="text-2xl font-bold mt-2 text-white">{value}</p>
+          <p className="text-xl font-bold mt-2 text-white truncate max-w-[140px]" title={String(value)}>{value}</p>
           <p className="text-xs text-[var(--color-text-muted)] mt-1">{subtitle}</p>
         </div>
         <div
@@ -75,8 +75,16 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatsCard
           title="Model"
-          value={modelInfo?.model_class || '—'}
-          subtitle="Random Forest Classifier"
+          value={
+            (() => {
+              const raw = modelInfo?.model_class ?? modelInfo?.model_type?.match(/\(([^)]+)\)$/)?.[1];
+              if (!raw) return '—';
+              // Singkat nama panjang agar tidak overflow
+              return raw.replace('RandomForestClassifier', 'RF Classifier')
+                        .replace('RandomForest', 'RF');
+            })()
+          }
+          subtitle={modelInfo?.model_class ?? modelInfo?.model_type?.match(/\(([^)]+)\)$/)?.[1] ?? 'Random Forest Classifier'}
           icon={FlaskConical}
           color="#6366f1"
           delay={0}
@@ -92,7 +100,7 @@ export default function DashboardPage() {
         <StatsCard
           title="Akurasi"
           value={metrics ? `${(metrics.accuracy * 100).toFixed(1)}%` : '—'}
-          subtitle={`F1: ${metrics ? metrics.f1_score.toFixed(4) : '—'}`}
+          subtitle={`F1: ${metrics ? (metrics.f1_score ?? 0).toFixed(4) : '—'}`}
           icon={TrendingUp}
           color="#10b981"
           delay={0.1}
@@ -239,11 +247,11 @@ export default function DashboardPage() {
               <div className="mt-4 flex flex-wrap gap-3 text-xs text-[var(--color-text-muted)]">
                 <span>Dilatih: {new Date(modelInfo.trained_at).toLocaleDateString('id-ID')}</span>
                 <span>•</span>
-                <span>SMOTE: {modelInfo.smote_applied ? 'Ya' : 'Tidak'}</span>
+                <span>SMOTE: {modelInfo.smote_applied != null ? (modelInfo.smote_applied ? 'Ya' : 'Tidak') : 'Tidak'}</span>
                 <span>•</span>
-                <span>Estimators: {String(modelInfo.parameters?.n_estimators ?? '—')}</span>
+                <span>Estimators: {String((modelInfo.parameters ?? modelInfo.model_parameters)?.n_estimators ?? '—')}</span>
                 <span>•</span>
-                <span>Class Weight: {String(modelInfo.parameters?.class_weight ?? '—')}</span>
+                <span>Class Weight: {String((modelInfo.parameters ?? modelInfo.model_parameters)?.class_weight ?? '—')}</span>
               </div>
             )}
           </div>

@@ -1,0 +1,38 @@
+2026-06-29 09:06:29 | INFO     | Memuat model: D:\mrp\model\output\rf_model.pkl
+2026-06-29 09:06:31 | INFO     | Memuat validation set: D:\mrp\model\output\validation_data.csv.gz
+2026-06-29 09:06:34 | INFO     | ========================================================================
+2026-06-29 09:06:34 | INFO     | EVALUASI VALIDATION
+2026-06-29 09:06:34 | INFO     | ========================================================================
+2026-06-29 09:06:34 | INFO     | Threshold         : 0.37830534
+2026-06-29 09:06:34 | INFO     | Average Precision : 0.409073
+2026-06-29 09:06:34 | INFO     | ROC-AUC           : 0.981198
+2026-06-29 09:06:34 | INFO     | Precision         : 0.307894
+2026-06-29 09:06:34 | INFO     | Recall            : 0.625332
+2026-06-29 09:06:34 | INFO     | F1                : 0.412624
+2026-06-29 09:06:34 | INFO     | Accuracy          : 0.988091
+2026-06-29 09:06:34 | INFO     | Confusion matrix  : TN=166070 FP=1587 FN=423 TP=706
+2026-06-29 09:06:35 | WARNING  | Testing set digunakan hanya untuk evaluasi final. Jangan gunakan hasil test untuk memilih ulang threshold.
+2026-06-29 09:06:35 | WARNING  | 1 baris target tidak valid dibuang.
+2026-06-29 09:06:39 | INFO     | ========================================================================
+2026-06-29 09:06:39 | INFO     | EVALUASI TEST FINAL
+2026-06-29 09:06:39 | INFO     | ========================================================================
+2026-06-29 09:06:39 | INFO     | Threshold         : 0.37830534
+2026-06-29 09:06:39 | INFO     | Average Precision : 0.235928
+2026-06-29 09:06:39 | INFO     | ROC-AUC           : 0.930740
+2026-06-29 09:06:39 | INFO     | Precision         : 0.295314
+2026-06-29 09:06:39 | INFO     | Recall            : 0.318824
+2026-06-29 09:06:39 | INFO     | F1                : 0.306619
+2026-06-29 09:06:39 | INFO     | Accuracy          : 0.983988
+2026-06-29 09:06:39 | INFO     | Confusion matrix  : TN=237342 FP=2045 FN=1831 TP=857
+2026-06-29 09:06:39 | INFO     |   precision    recall  f1-score   support
+2026-06-29 09:06:39 | INFO     |   
+2026-06-29 09:06:39 | INFO     |        Aman (0)       0.99      0.99      0.99    239387
+2026-06-29 09:06:39 | INFO     |   Backorder (1)       0.30      0.32      0.31      2688
+2026-06-29 09:06:39 | INFO     |   
+2026-06-29 09:06:39 | INFO     |        accuracy                           0.98    242075
+2026-06-29 09:06:39 | INFO     |       macro avg       0.64      0.66      0.65    242075
+2026-06-29 09:06:39 | INFO     |    weighted avg       0.98      0.98      0.98    242075
+2026-06-29 09:06:39 | INFO     | Threshold terpilih: 0.37830534
+2026-06-29 09:06:39 | INFO     | Analisis threshold : D:\mrp\model\output\threshold_analysis.csv
+2026-06-29 09:06:39 | INFO     | Hasil tuning       : D:\mrp\model\output\threshold_result.json
+2026-06-29 09:06:39 | INFO     | Metadata diperbarui: D:\mrp\model\output\rf_model_metadata.json

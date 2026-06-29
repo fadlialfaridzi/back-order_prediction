@@ -252,15 +252,29 @@ app.post('/api/predict/upload-csv', upload.single('file'), async (req, res) => {
 
         // Gabungkan identifiers (sku jika ada) ke hasil
         const { results, summary, threshold_used } = response.data;
-        const enrichedResults = results.map((r, i) => ({
-            ...r,
-            sku: rows[i].sku || rows[i].SKU || null,
-            is_backorder: r.prediction === 1,
-        }));
+
+        // Normalisasi: Flask baru pakai probability_backorder & backorder_percentage
+        // Flask lama pakai probability & backorder_pct
+        const enrichedResults = results.map((r, i) => {
+            const prob = r.probability_backorder ?? r.probability ?? 0;
+            return {
+                ...r,
+                probability_backorder: prob,
+                probability: prob,
+                sku: r.sku ?? rows[i].sku ?? rows[i].SKU ?? null,
+                is_backorder: r.prediction === 1,
+            };
+        });
+
+        const normalizedSummary = {
+            ...summary,
+            backorder_pct: summary.backorder_pct ?? summary.backorder_percentage
+                ?? (summary.total > 0 ? (summary.backorder / summary.total) * 100 : 0),
+        };
 
         res.json({
             results: enrichedResults,
-            summary,
+            summary: normalizedSummary,
             threshold_used,
             rows_parsed: rows.length,
             filename: req.file.originalname,
@@ -323,8 +337,10 @@ app.post('/api/predict/run-all', async (req, res) => {
             for (let i = 0; i < batch.length; i++) {
                 const r = batch[i];
                 const idx = offset + i;
-                skus.push(r.sku ?? items[idx].sku);
-                probs.push(+(r.probability * 100).toFixed(2)); // 0–100
+            skus.push(r.sku ?? items[idx].sku);
+                // Flask baru: probability_backorder; Flask lama: probability
+                const prob = r.probability_backorder ?? r.probability ?? 0;
+                probs.push(+(prob * 100).toFixed(2)); // 0–100
                 statuses.push(r.prediction === 1);
             }
 

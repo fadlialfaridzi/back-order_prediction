@@ -1,12 +1,11 @@
 {
-  "trained_at": "2026-06-13T15:58:15.551558",
-  "model_class": "RandomForestClassifier",
-  "parameters": {
-    "n_estimators": 100,
-    "max_depth": null,
-    "class_weight": "balanced"
-  },
-  "smote_applied": true,
+  "schema_version": 2,
+  "trained_at": "2026-06-28T19:51:01.956623+00:00",
+  "model_type": "sklearn.pipeline.Pipeline(RandomForestClassifier)",
+  "model_file": "D:\\mrp\\model\\output\\rf_model.pkl",
+  "training_file": "D:\\mrp\\model\\Training_BOP.csv",
+  "target_column": "went_on_backorder",
+  "id_column": "sku",
   "feature_names": [
     "national_inv",
     "lead_time",
@@ -19,24 +18,207 @@
     "sales_6_month",
     "sales_9_month",
     "min_bank",
-    "potential_issue",
     "pieces_past_due",
     "perf_6_month_avg",
     "perf_12_month_avg",
     "local_bo_qty",
+    "potential_issue",
     "deck_risk",
     "oe_constraint",
     "ppap_risk",
     "stop_auto_buy",
     "rev_stop"
   ],
-  "evaluation_metrics": {
-    "accuracy": 0.9879,
-    "precision": 0.3132,
-    "recall": 0.0733,
-    "f1_score": 0.1188,
-    "roc_auc": 0.8551
+  "numeric_features": [
+    "national_inv",
+    "lead_time",
+    "in_transit_qty",
+    "forecast_3_month",
+    "forecast_6_month",
+    "forecast_9_month",
+    "sales_1_month",
+    "sales_3_month",
+    "sales_6_month",
+    "sales_9_month",
+    "min_bank",
+    "pieces_past_due",
+    "perf_6_month_avg",
+    "perf_12_month_avg",
+    "local_bo_qty"
+  ],
+  "binary_features": [
+    "potential_issue",
+    "deck_risk",
+    "oe_constraint",
+    "ppap_risk",
+    "stop_auto_buy",
+    "rev_stop"
+  ],
+  "sentinel_values": {
+    "perf_6_month_avg": -99,
+    "perf_12_month_avg": -99
   },
-  "optimal_threshold": 0.15,
-  "threshold_tuned_at": "2026-06-14T17:08:56.153223"
+  "random_state": 42,
+  "validation_size": 0.1,
+  "data_statistics": {
+    "rows_loaded": 1687861,
+    "exact_duplicates_detected": 0,
+    "exact_duplicates_dropped": 0,
+    "invalid_target_rows_dropped": 1,
+    "sentinel_replaced": {
+      "perf_6_month_avg": 129478,
+      "perf_12_month_avg": 122050
+    },
+    "rows_ready": 1687860,
+    "class_distribution": {
+      "0": 1676567,
+      "1": 11293
+    },
+    "positive_rate": 0.006690720794378681
+  },
+  "fit_rows": 1519074,
+  "validation_rows": 168786,
+  "fit_class_distribution": {
+    "0": 1508910,
+    "1": 10164
+  },
+  "validation_class_distribution": {
+    "0": 167657,
+    "1": 1129
+  },
+  "model_parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": {
+      "0": 1,
+      "1": 10
+    },
+    "criterion": "gini",
+    "max_depth": 16,
+    "max_features": 0.5,
+    "max_leaf_nodes": null,
+    "max_samples": 0.8,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 600,
+    "n_jobs": -1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "hyperparameter_search": {
+    "enabled": true,
+    "sample_rows": 300000,
+    "cv_splits": 3,
+    "n_iter": 20,
+    "scoring_refit": "average_precision",
+    "best_cv_average_precision": 0.26699249838631056,
+    "best_params": {
+      "classifier__n_estimators": 600,
+      "classifier__min_samples_split": 2,
+      "classifier__min_samples_leaf": 2,
+      "classifier__max_samples": 0.8,
+      "classifier__max_features": 0.5,
+      "classifier__max_depth": 16,
+      "classifier__class_weight": {
+        "0": 1,
+        "1": 10
+      }
+    },
+    "results_file": "D:\\mrp\\model\\output\\hyperparameter_search_results.csv"
+  },
+  "validation_metrics_before_threshold_tuning": {
+    "threshold": 0.5,
+    "average_precision": 0.4090725786669308,
+    "roc_auc": 0.9811984935733307,
+    "accuracy": 0.9914981100328226,
+    "precision": 0.3931564245810056,
+    "recall": 0.49867139061116034,
+    "f1": 0.4396720031237798,
+    "confusion_matrix": {
+      "tn": 166788,
+      "fp": 869,
+      "fn": 566,
+      "tp": 563
+    }
+  },
+  "validation_artifact": "D:\\mrp\\model\\output\\validation_data.csv.gz",
+  "optimal_threshold": 0.3783053376568284,
+  "threshold_status": "tuned",
+  "library_versions": {
+    "python": "3.12.7",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "scikit_learn": "1.9.0",
+    "joblib": "1.5.3"
+  },
+  "runtime": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "cpu_count": 16
+  },
+  "threshold_tuning": {
+    "tuned_at": "2026-06-29T02:06:35.262489+00:00",
+    "model_file": "D:\\mrp\\model\\output\\rf_model.pkl",
+    "validation_file": "D:\\mrp\\model\\output\\validation_data.csv.gz",
+    "strategy": "fbeta",
+    "beta": 2.0,
+    "target_recall": null,
+    "min_precision": null,
+    "cost_fn": 10.0,
+    "cost_fp": 1.0,
+    "chosen_threshold": 0.3783053376568284,
+    "validation_metrics": {
+      "threshold": 0.3783053376568284,
+      "rows": 168786,
+      "positive_rate": 0.006688943395779271,
+      "average_precision": 0.4090725786669308,
+      "roc_auc": 0.9811984935733307,
+      "accuracy": 0.9880914293839537,
+      "precision": 0.3078935891844745,
+      "recall": 0.62533215234721,
+      "f1": 0.4126241963763881,
+      "confusion_matrix": {
+        "tn": 166070,
+        "fp": 1587,
+        "fn": 423,
+        "tp": 706
+      }
+    },
+    "selected_threshold_row": {
+      "threshold": 0.3783053376568284,
+      "precision": 0.3078935891844745,
+      "recall": 0.62533215234721,
+      "f1": 0.41262419637638814,
+      "fbeta": 0.5184314877368189,
+      "tp": 706.0,
+      "fp": 1587.0,
+      "fn": 423.0,
+      "tn": 166070.0,
+      "total_cost": 5817.0,
+      "predicted_positive": 2293.0
+    },
+    "threshold_analysis_file": "D:\\mrp\\model\\output\\threshold_analysis.csv",
+    "test_file": "D:\\mrp\\model\\Testing_BOP.csv",
+    "test_metrics": {
+      "threshold": 0.3783053376568284,
+      "rows": 242075,
+      "positive_rate": 0.01110399669523908,
+      "average_precision": 0.23592837567966643,
+      "roc_auc": 0.930739810326803,
+      "accuracy": 0.9839884333367758,
+      "precision": 0.2953135768435562,
+      "recall": 0.31882440476190477,
+      "f1": 0.3066189624329159,
+      "confusion_matrix": {
+        "tn": 237342,
+        "fp": 2045,
+        "fn": 1831,
+        "tp": 857
+      }
+    }
+  }
 }
