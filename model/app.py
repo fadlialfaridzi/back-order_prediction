@@ -282,20 +282,17 @@ def health():
 
 @app.route("/model/info", methods=["GET"])
 def model_info():
-    return jsonify({
-        "model_type": META.get("model_type"),
-        "trained_at": META.get("trained_at"),
+    # Mengembalikan seluruh metadata yang ada di JSON
+    response_data = dict(META)
+    # Timpa dengan nilai memori yang mungkin di-override
+    response_data.update({
         "feature_names": FEATURES,
         "numeric_features": NUMERIC_FEATURES,
         "binary_features": BINARY_FEATURES,
         "optimal_threshold": THRESHOLD,
         "threshold_status": THRESHOLD_STATUS,
-        "validation_metrics_before_threshold_tuning": META.get(
-            "validation_metrics_before_threshold_tuning"
-        ),
-        "threshold_tuning": META.get("threshold_tuning"),
-        "library_versions": META.get("library_versions"),
     })
+    return jsonify(response_data)
 
 
 @app.route("/predict", methods=["POST"])
